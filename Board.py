@@ -2,11 +2,13 @@ class Board:
     position = (0, 0)
     width = 0
     height = 0
+    placed = False
 
     def __init__(self, pos, widthParam, heightParam):
         self.position = pos
         self.width = widthParam
         self.height = heightParam
+        self.placed = False
 
 
     def draw(self, ctx):

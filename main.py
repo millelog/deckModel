@@ -21,17 +21,18 @@ def initCtx(width, height):
 def drawAll(ctx, deck, shortBoards, longBoards, supports):
     deck.draw(ctx)
     for board in shortBoards:
-        print(board.position)
-        board.draw(ctx)
+        if board.placed:
+            board.draw(ctx)
     for board in longBoards:
-        board.draw(ctx)
+        if board.placed:
+            board.draw(ctx)
     for support in supports:
         support.draw(ctx)
 
 
-def genBoards(Mean):
+def genBoards(mean):
     boards = []
-    lengths = random.normal(Mean, 40, 14)
+    lengths = random.normal(mean, 40, 30)
     for i in range(len(lengths)):
         boards.append(Board((0, 0), lengths[i], BOARD_HEIGHT))
     return boards
