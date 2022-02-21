@@ -35,7 +35,6 @@ class BoardPlacer:
             sbIdx, lbIdx  = self.getBoardCombo(position['width'], sbIndexes, lbIndexes)
             sbIndexes.remove(sbIdx)
             lbIndexes.remove(lbIdx)
-            print(lbIndexes)
             if longNext:
                 self.longBoards[lbIdx].position = position['pos']
                 self.shortBoards[sbIdx].position = (position['pos'][0]+self.longBoards[lbIdx].width, position['pos'][1])
