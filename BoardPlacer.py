@@ -97,6 +97,8 @@ class BoardPlacer:
     def placeBoardPair(self, closestPair, boardPosIdx):
         self.shortBoards[closestPair['sbIdx']].placed = True
         self.longBoards[closestPair['lbIdx']].placed = True
+        self.shortBoards[closestPair['sbIdx']].index = closestPair['sbIdx']
+        self.longBoards[closestPair['lbIdx']].index = closestPair['lbIdx']
         self.removeBoardsFromCombo(closestPair['sbIdx'], closestPair['lbIdx'])
         self.deck.boardPositions[boardPosIdx]['lbIdx'] = closestPair['lbIdx']
         self.deck.boardPositions[boardPosIdx]['sbIdx'] = closestPair['sbIdx']

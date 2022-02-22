@@ -1,3 +1,5 @@
+from cairo import FONT_SLANT_NORMAL, FONT_WEIGHT_NORMAL
+
 class Board:
     position = (0, 0)
     width = 0
@@ -18,3 +20,10 @@ class Board:
         ctx.set_source_rgb(0, 0, 0)
         ctx.set_line_width(.5)
         ctx.stroke()
+
+        ctx.set_font_size(0.1)
+        ctx.select_font_face("Arial",
+                             FONT_SLANT_NORMAL,
+                             FONT_WEIGHT_NORMAL)
+        ctx.move_to(self.position[0]+10, self.position[1]+20)
+        ctx.show_text(str(self.index)+" | len: "+str(round(self.width/10))+"\"")
