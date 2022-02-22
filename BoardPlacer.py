@@ -61,27 +61,27 @@ class BoardPlacer:
         meanSupportPos = 0
         for sp in supportGroup:
             if sp['supportIdx'] % 2 == 0:
-                meanSupportPos += self.longBoards[sp['lbIdx']].width + self.longBoards[sp['lbIdx']].position[0]
+                meanSupportPos += self.shortBoards[sp['sbIdx']].position[0]
             else:
-                meanSupportPos += self.shortBoards[sp['sbIdx']].width + self.shortBoards[sp['sbIdx']].position[0]
+                meanSupportPos += self.longBoards[sp['lbIdx']].position[0]
         return meanSupportPos/len(supportGroup)
 
     def getMinMaxSupportGroup(self, supportGroup):
         widths = []
         for boardPosition in supportGroup:
             if boardPosition['supportIdx'] % 2 == 0:
-                widths.append(self.longBoards[boardPosition['lbIdx']].width)
+                widths.append(self.longBoards[boardPosition['lbIdx']].width+boardPosition['pos'][0])
             else:
-                widths.append(self.shortBoards[boardPosition['sbIdx']].width)
+                widths.append(self.shortBoards[boardPosition['sbIdx']].width+boardPosition['pos'][0])
         return min(widths), max(widths)
 
-    def invalidPairSupport(self, closestPair, i):
-        supportGroup = self.getSupportGroup(i)
-        supportGroup.append({'supportIdx': i, 'lbIdx': closestPair['lbIdx'], 'sbIdx': closestPair['sbIdx']})
+    def invalidPairSupport(self, closestPair, supportIdx, boardPosIdx):
+        supportGroup = self.getSupportGroup(supportIdx)
+        supportGroup.append({'supportIdx': supportIdx, 'lbIdx': closestPair['lbIdx'], 'sbIdx': closestPair['sbIdx'], 'pos': self.deck.boardPositions[boardPosIdx]['pos']})
         if len(supportGroup) == 0:
             return False
         supportMin, supportMax = self.getMinMaxSupportGroup(supportGroup)
-        return abs(supportMax-supportMin) > SUPPORT_WIDTH
+        return abs(supportMax-supportMin) > SUPPORT_WIDTH * .75
 
     def removeInvalidFromCombinedBoards(self, invalidPairs):
         if len(invalidPairs) == 0:
@@ -89,9 +89,9 @@ class BoardPlacer:
 
         returnArray = self.boardWidthsCombined
         for p in invalidPairs:
-            for bwc in returnArray:
-                if p['lbIdx'] == bwc['lbIdx'] or p['sbIdx'] == bwc['sbIdx']:
-                    returnArray.remove(bwc)
+            for nbp in returnArray:
+                if nbp['sbIdx'] == p['sbIdx'] or nbp['lbIdx'] == p['lbIdx']:
+                    returnArray.remove(nbp)
         return returnArray
 
     def placeBoardPair(self, closestPair, boardPosIdx):
@@ -100,6 +100,15 @@ class BoardPlacer:
         self.removeBoardsFromCombo(closestPair['sbIdx'], closestPair['lbIdx'])
         self.deck.boardPositions[boardPosIdx]['lbIdx'] = closestPair['lbIdx']
         self.deck.boardPositions[boardPosIdx]['sbIdx'] = closestPair['sbIdx']
+        position = self.deck.boardPositions[boardPosIdx]
+        if position['shortFirst']:
+            self.shortBoards[position['sbIdx']].position = position['pos']
+            self.longBoards[position['lbIdx']].position = (
+            position['pos'][0] + self.shortBoards[position['sbIdx']].width, position['pos'][1])
+        else:
+            self.longBoards[position['lbIdx']].position = position['pos']
+            self.shortBoards[position['sbIdx']].position = (
+            position['pos'][0] + self.longBoards[position['lbIdx']].width, position['pos'][1])
 
     def fillBoardPositions(self):
         invalidPairs = []
@@ -110,14 +119,14 @@ class BoardPlacer:
                 if len(combinedBoardWidthsWoInvalid) == 0:
                     return
                 closestPair = self.get_closest_boardCombo(combinedBoardWidthsWoInvalid, self.deck.boardPositions[i]['width'])
-                tryAgain = self.invalidPairSupport(closestPair, self.deck.boardPositions[i]['supportIdx'])
+                tryAgain = self.invalidPairSupport(closestPair, self.deck.boardPositions[i]['supportIdx'], i)
                 if tryAgain:
                     invalidPairs.append(closestPair)
             self.placeBoardPair(closestPair, i)
             invalidPairs = []
 
     def removeBoardsFromCombo(self, sbIdx, lbIdx):
-        self.boardWidthsCombined = [b for b in self.boardWidthsCombined if b['sbIdx'] != sbIdx and b['lbIdx'] != lbIdx]
+        self.boardWidthsCombined = [b for b in self.boardWidthsCombined if not (b['sbIdx'] == sbIdx or b['lbIdx'] == lbIdx)]
 
     def get_closest_boardCombo(self, arr, target):
         n = len(arr)
@@ -152,11 +161,5 @@ class BoardPlacer:
 
     def placeBoards(self):
         self.fillBoardPositions()
-        for position in self.deck.boardPositions:
-            if position['shortFirst']:
-                self.shortBoards[position['sbIdx']].position = position['pos']
-                self.longBoards[position['lbIdx']].position = (position['pos'][0] + self.shortBoards[position['sbIdx']].width, position['pos'][1])
-            else:
-                self.longBoards[position['lbIdx']].position = position['pos']
-                self.shortBoards[position['sbIdx']].position = (position['pos'][0] + self.longBoards[position['lbIdx']].width, position['pos'][1])
+
         self.placeSupports()

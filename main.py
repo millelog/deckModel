@@ -29,7 +29,7 @@ def drawAll(ctx, boardPlacer):
 
 def genBoards(mean):
     boards = []
-    lengths = random.normal(mean, 30, 30)
+    lengths = random.normal(mean, 50, 100)
     for i in range(len(lengths)):
         boards.append(Board((0, 0), lengths[i], BOARD_HEIGHT))
     return boards
@@ -38,7 +38,7 @@ def genBoards(mean):
 if __name__ == '__main__':
     surface = cairo.ImageSurface(cairo.FORMAT_RGB24, WIDTH, HEIGHT)
     ctx = initCtx(WIDTH, HEIGHT)
-    boardPlacer = BoardPlacer(genBoards(400), genBoards(600), Deck())
+    boardPlacer = BoardPlacer(genBoards(350), genBoards(575), Deck())
     boardPlacer.placeBoards()
     drawAll(ctx, boardPlacer)
 
