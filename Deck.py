@@ -1,5 +1,5 @@
 from Globals import BOARD_HEIGHT
-
+from math import floor
 class Deck:
     points = []
     boundingSegmentsLeft = []
@@ -30,7 +30,10 @@ class Deck:
             if not leftBound or not rightBound:
                 break
             width = rightBound-leftBound
-            boardPoses.append({'index': index,'width': width, 'pos': (leftBound, y), 'shortFirst': shortFirst, 'sbIdx': 0, 'lbIdx': 0})
+            supportIdx = 2*floor(index/8)
+            if index % 2 != 0:
+                supportIdx += 1
+            boardPoses.append({'index': index,'width': width, 'pos': (leftBound, y), 'shortFirst': shortFirst, 'sbIdx': -1, 'lbIdx': -1, 'supportIdx': supportIdx})
             y += BOARD_HEIGHT
             index += 1
             shortFirst = not shortFirst
