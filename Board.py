@@ -3,11 +3,13 @@ class Board:
     width = 0
     height = 0
     placed = False
+    index = -1
 
     def __init__(self, pos, widthParam, heightParam):
         self.position = pos
         self.width = widthParam
         self.height = heightParam
+        self.index = -1
         self.placed = False
 
 

@@ -17,8 +17,11 @@ class Deck:
         self.maxY = max(self.points, key=lambda idx: idx[1])[1]
         self.boardPositions = self.populateBoardPositions()
 
+
     def populateBoardPositions(self):
-        boardPos = []
+        boardPoses = []
+        index = 0
+        shortFirst = False
         y = 10
         while y < self.maxY:
             targetY = y + (BOARD_HEIGHT / 2)
@@ -27,9 +30,11 @@ class Deck:
             if not leftBound or not rightBound:
                 break
             width = rightBound-leftBound
-            boardPos.append({'width': width, 'pos': (leftBound, y)})
+            boardPoses.append({'index': index,'width': width, 'pos': (leftBound, y), 'shortFirst': shortFirst, 'sbIdx': 0, 'lbIdx': 0})
             y += BOARD_HEIGHT
-        return boardPos
+            index += 1
+            shortFirst = not shortFirst
+        return boardPoses
 
     def pointSlopeX(self, y, p0, p1):
         return ((y - p0[1]) * (p1[0] - p0[0])) / (p1[1] - p0[1]) + p0[0]
