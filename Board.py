@@ -26,4 +26,4 @@ class Board:
                              FONT_SLANT_NORMAL,
                              FONT_WEIGHT_NORMAL)
         ctx.move_to(self.position[0]+10, self.position[1]+20)
-        ctx.show_text(str(self.index)+" | len: "+str(round(self.width/10))+"\"")
+        ctx.show_text(str(self.index)+" | len: "+str(round(self.width)/10)+"\"")
